@@ -26,26 +26,21 @@ class _MonitoramentoPageState extends State<MonitoramentoPage> {
     }
   }
 
-Future<void> _connectToDevice() async {
-  if (_bluetoothController.selectedDeviceAddress.isNotEmpty) {
-    try {
-      await _bluetoothController.connectToDevice();
-      _showSnackbar('Conectado ao dispositivo');
-    } catch (e) {
-      print('Erro ao conectar: $e');
-      _showSnackbar('Erro ao conectar ao dispositivo');
+  Future<void> _connectToDevice() async {
+    if (_bluetoothController.selectedDeviceAddress.isNotEmpty) {
+      try {
+        await _bluetoothController.connectToDevice();
+        _showSnackbar('Conectado ao dispositivo');
+      } catch (e) {
+        print('Erro ao conectar: $e');
+        _showSnackbar('Erro ao conectar ao dispositivo');
+      }
     }
   }
-}
 
-void _showSnackbar(String message) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-}
-
-void _notifyReconnection() {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reconectando...')));
-}
-
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -90,14 +90,6 @@ mixin _$BluetoothController on _BluetoothController, Store {
     return _$connectToDeviceAsyncAction.run(() => super.connectToDevice());
   }
 
-  late final _$_reconnectAsyncAction =
-      AsyncAction('_BluetoothController._reconnect', context: context);
-
-  @override
-  Future<void> _reconnect() {
-    return _$_reconnectAsyncAction.run(() => super._reconnect());
-  }
-
   late final _$_BluetoothControllerActionController =
       ActionController(name: '_BluetoothController', context: context);
 

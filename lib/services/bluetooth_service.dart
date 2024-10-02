@@ -3,12 +3,10 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 class BluetoothService {
   BluetoothConnection? connection;
   bool isConnected = false;
-  String? _connectedDeviceAddress;
+  String? _connectedDeviceAddress;  // Armazenar o endereço do dispositivo conectado
 
-  // Método para obter dispositivos Bluetooth pareados
   Future<List<BluetoothDevice>> getBondedDevices() async {
     try {
-      // Pega a lista de dispositivos já pareados
       List<BluetoothDevice> devices = await FlutterBluetoothSerial.instance.getBondedDevices();
       return devices;
     } catch (e) {
@@ -21,15 +19,8 @@ class BluetoothService {
     try {
       connection = await BluetoothConnection.toAddress(address);
       isConnected = true;
-      _connectedDeviceAddress = address;
+      _connectedDeviceAddress = address;  // Armazenar o endereço do dispositivo conectado
       print('Conectado ao dispositivo $address');
-
-      // Escutar eventos de desconexão e tentar reconectar
-      connection!.input?.listen(null).onDone(() {
-        print('Conexão perdida com $address');
-        isConnected = false;
-        _tryReconnect();
-      });
     } catch (e) {
       isConnected = false;
       print('Erro ao conectar: $e');
@@ -37,31 +28,20 @@ class BluetoothService {
     }
   }
 
-  Future<void> _tryReconnect() async {
-    if (_connectedDeviceAddress != null && !isConnected) {
-      print('Tentando reconectar automaticamente...');
-      await connect(_connectedDeviceAddress!);
-    }
+  Stream<List<int>>? listenToData() {
+    return connection?.input;
   }
-
-Stream<List<int>>? listenToData() {
-  if (connection != null && isConnected) {
-    // Converta o input stream em um broadcast stream para permitir múltiplos ouvintes
-    return connection!.input?.asBroadcastStream();
-  }
-  return null;
-}
-
 
   Future<void> disconnect() async {
     if (connection != null && isConnected) {
       await connection!.close();
       isConnected = false;
-      _connectedDeviceAddress = null;
+      _connectedDeviceAddress = null;  // Limpa o endereço do dispositivo desconectado
       print('Dispositivo desconectado');
     }
   }
 
+  // Método para retornar o endereço do dispositivo conectado
   String? getConnectedDeviceAddress() {
     return _connectedDeviceAddress;
   }
@@ -69,5 +49,13 @@ Stream<List<int>>? listenToData() {
   bool isDeviceConnected() {
     return isConnected;
   }
+
+  Future<void> reconnect() async {
+    if (_connectedDeviceAddress != null && !isConnected) {
+      print('Tentando reconectar ao dispositivo $_connectedDeviceAddress...');
+      await connect(_connectedDeviceAddress!);
+    } else {
+      print('Nenhum dispositivo armazenado para reconectar');
+    }
+  }
 }
-  
